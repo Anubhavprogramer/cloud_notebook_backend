@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const mongoURI = "mongodb://localhost:27017/inotebook?directConnection=true";   //database string 
+const mongoURI = "mongodb://localhost:27017/cloudnotebook";   //database string 
 
 async function connectToMongo() {
   try {
