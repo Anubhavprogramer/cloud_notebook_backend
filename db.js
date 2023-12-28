@@ -1,15 +1,13 @@
-const mongoose = require('mongoose');
-const mongoURI = 'mongodb://localhost:27017/inotebook?directConnection=true';
+const mongoose = require("mongoose");
+const mongoURI = "mongodb://localhost:27017/inotebook?directConnection=true";
 
-const connectToMongo = async () => {
-
-    try {
-        mongoose.connect(mongoURI, ()=>{
-            console.log("Connected to Mongo Successfully");
-        })
-    } catch (error) {
-        console.log(error)
-    }
-};
+async function connectToMongo() {
+  try {
+    await mongoose.connect(mongoURI);
+    console.log("Connected to Mongo Successfully");
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error.message);
+  }
+}
 
 module.exports = connectToMongo;
