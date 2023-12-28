@@ -3,6 +3,10 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
+
+//to use middleware use app.use 
+app.use(express.json())
+
 // app.get('/', (req, res)=>{          // home route
 //     res.send('radhe radhe')     //sending response to the server
 // })
