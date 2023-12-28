@@ -4,6 +4,7 @@ const User = require("../models/User");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const fetchuser = require('../middleware/fetchUser')
 
 const JWT_SECRET = "radhe_radhe_**()";
 
@@ -75,10 +76,12 @@ router.post(
     "/login",
     [
       body("email", "Enter a valid email").isEmail(),
-      body("password", "Password cannot be blank").isLength({ min: 5 }).exists()
-        ],
+      body("password", "Password cannot be blank")
+        .isLength({ min: 5 })
+        .exists(),
+    ],
     async (req, res) => {
-    //   console.log("radhe radhe");
+      //   console.log("radhe radhe");
       const errors = validationResult(req);
       //if there are erors than send bad request otherwise create the error
       if (!errors.isEmpty()) {
@@ -88,7 +91,7 @@ router.post(
       const { email, password } = req.body;
       try {
         let user = await User.findOne({ email });
-        console.log(user);
+        // console.log(user);
         if (!user) {
           return res
             .status(400)
@@ -121,4 +124,22 @@ router.post(
       }
     }
   );
+//GET DETAILS OF LOGED IN USER: POST "/api/auth/getuser", login required
+// for every protected rout we will just add fetch user middle ware before it sot that we get the id of logedin user 
+router.post(
+  "/getuser",
+  fetchuser, //middle ware to get the id of the user from the jwt token which we will get as teh response from  the user 
+  async (req, res) => {
+    try {
+      const userID = req.user.id;
+      const user = await User.findById(userID).select("-password");
+      res.send(user)
+    } catch (error) {
+      //sending the error is any problem occured
+      console.error(error.message);
+      res.status(500).send("INTERNAL SERVER ERROR");
+    }
+  }
+);
+
 module.exports = router;
