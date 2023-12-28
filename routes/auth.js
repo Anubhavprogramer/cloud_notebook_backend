@@ -2,7 +2,11 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User')
 const router = express.Router();
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
+
+const JWT_SECRET="radhe_radhe_**()";
 
 // creating a user using: POST "api/auth/createUser", Dosen't require login , it is signup
 router.post('/createUser',[
@@ -32,16 +36,29 @@ router.post('/createUser',[
              return res.status(400).json({error:"Sorry a user with this email already exits"})
             } 
             
+            // secureing the password
+            const salt = await bcrypt.genSalt(10);  // salt creation
+             secPass= await bcrypt.hash(req.body.password,salt); //hast creation and giving to the server like a secured password
+
             //creating user for databse
             user = await User.create({
                 name:req.body.name,
                 email:req.body.email,
-                password:req.body.password
+                password: secPass  //Adding secured password
             })
             
             //sending is user is created with out any problem
-            res.json({"nice":"User created"})
-            
+            // res.json({"nice":"User created"})
+
+            // creating a token and than send it as a respose to the user
+            const data = {
+                user:{
+                    id:user.id
+                }
+            }
+            const awthtoken = jwt.sign(data, JWT_SECRET)
+            // console.log(jwtData)
+            res.send({awthtoken})
             
             //  .then(user => {res.json(user),console.log(user)}) //if user gets created than add it to the database
             //  .catch(err=> {console.log(err), res.json({error:"Please enter the unique value",message:err.message})}) //if error occured than console.log the error
