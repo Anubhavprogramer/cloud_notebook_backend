@@ -39,6 +39,7 @@ router.post('/createUser',[
                 password:req.body.password
             })
             
+            //sending is user is created with out any problem
             res.json({"nice":"User created"})
             
             
@@ -46,6 +47,7 @@ router.post('/createUser',[
             //  .catch(err=> {console.log(err), res.json({error:"Please enter the unique value",message:err.message})}) //if error occured than console.log the error
             
         } catch (error) {
+            //sending the error is any problem occured
             console.error(error.message);
             res.status(500).send("Some:error occured")
         }
