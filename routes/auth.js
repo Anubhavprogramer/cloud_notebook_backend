@@ -72,13 +72,13 @@ router.post(
   }
 ),
   //route to make login using email and password at api/auth/login,
-  router.post(
-    "/login",
+  router.post(  //post route as i don't want that data show in the url
+    "/login", // login route to get the person loged in 
     [
-      body("email", "Enter a valid email").isEmail(),
+      body("email", "Enter a valid email").isEmail(),  // checking for a valid email from the req.body
       body("password", "Password cannot be blank")
-        .isLength({ min: 5 })
-        .exists(),
+        .isLength({ min: 5 })   //this is to check for the valid password
+        .exists(), //it is compulsory that password should be exists
     ],
     async (req, res) => {
       //   console.log("radhe radhe");
@@ -88,7 +88,7 @@ router.post(
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { email, password } = req.body;
+      const { email, password } = req.body; // fetching email and password from the body
       try {
         let user = await User.findOne({ email });
         // console.log(user);
@@ -113,7 +113,7 @@ router.post(
             id: user.id,
           },
         };
-
+        // creating the auth token for the user to make further work
         const authtoken = jwt.sign(data, JWT_SECRET);
         // console.log(authtoken);
         res.json({ authtoken });
@@ -126,20 +126,20 @@ router.post(
   );
 //GET DETAILS OF LOGED IN USER: POST "/api/auth/getuser", login required
 // for every protected rout we will just add fetch user middle ware before it sot that we get the id of logedin user 
-router.post(
-  "/getuser",
+router.post(  //post route as i don't want that data should be shown in the url
+  "/getuser",  //route to get the data from the user 
   fetchuser, //middle ware to get the id of the user from the jwt token which we will get as teh response from  the user 
-  async (req, res) => {
-    try {
-      const userID = req.user.id;
-      const user = await User.findById(userID).select("-password");
-      res.send(user)
-    } catch (error) {
+  async (req, res) =>  {  //async function as getting data from the database is slow process
+    try { //try catch
+      const userID = req.user.id;  // storing the id of the authorised user to userID variable 
+      const user = await User.findById(userID).select("-password"); //storing the data of the user to user  variable accept password 
+      res.send(user) //send the user as a response 
+    } catch (error) {  
       //sending the error is any problem occured
       console.error(error.message);
-      res.status(500).send("INTERNAL SERVER ERROR");
-    }
-  }
-);
+      res.status(500).send("INTERNAL SERVER ERROR");// if error occcured than this messege will be send 
+    }//catch close 
+  } // function close 
+); //router close 
 
 module.exports = router;

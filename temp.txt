@@ -14,5 +14,5 @@
 }
 
 {
-  "authtoken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjU4ZGRjZWIwMmY4Y2U3MjYxMmY5MjE3In0sImlhdCI6MTcwMzc5NTk2M30.m-JhYJOFa3tOdeh_sOpJZStMg2ow8xg2-hGZJG7uJEI"
+  "authtoken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjU4ZGRjZWIwMmY4Y2U3MjYxMmY5MjE3In0sImlhdCI6MTcwMzg1NjAzMn0.9xFYfowIyOVRtXKHZieHtplaL8nboIs-pwQ6d96y-0E"
 }
