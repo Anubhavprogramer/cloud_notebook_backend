@@ -9,7 +9,7 @@ const { body, validationResult } = require("express-validator");
 router.get('/fetchallnotes',fetchuser, async(req,res)=>{
 
     try {
-        const notes = await Notes.find({user:req.user.id});
+        const notes = await Note.find({user:req.user.id});
         res.json(notes)
         // res.send("radhe radhe");  mendatory to be written
     } catch (error) {
@@ -21,7 +21,7 @@ router.get('/fetchallnotes',fetchuser, async(req,res)=>{
 })
 
 //  this routes add notes to  our database useing post and login required  
-router.get('/addnotes',fetchuser,[
+router.post('/addnotes',fetchuser,[
     body("tittle", "Enter a valid tittle") // checking for a valid tittle from the req.body
     .isLength({min: 5}) //must have min legth of 5 
     .exists(),  // must exists 
@@ -56,5 +56,64 @@ router.get('/addnotes',fetchuser,[
       res.status(500).send("INTERNAL SERVER OCCURED");
     }
 })
+
+
+// route to update user
+router.put('/updatenotes/:id',fetchuser,async(req,res)=>{
+    try {       
+        //here we are creating our note from the user inshort i am doing destructuring 
+        const {tittle,description,tag} = req.body;
+        //creating a newNote object
+        const newNote = {};
+        if(tittle){newNote.tittle = tittle};
+        if(description){newNote.description = description};
+        if(tag){newNote.tag = tag};
+        // find the note that  has to be updated
+        let note = await Note.findById(req.params.id)
+        if(!note)
+        {
+            res.status(404).send("Not found")
+        }
+        if(note.user.toString() !== req.user.id)
+        {
+            return res.status(401).send("Not Allowed");
+        }
+
+        note = await Note.findByIdAndUpdate(req.params.id, {$set: newNote}, {new:true})
+        res.json({note})
+        // res.send("radhe radhe");  mendatory to be written
+    } catch (error) {
+      //sending the error is any problem occured
+      console.error(error.message);
+      res.status(500).send("INTERNAL SERVER OCCURED");
+    }
+
+})
+
+//delete the note using DELETE request 
+router.delete('/deletenote/:id',fetchuser,async(req,res)=>{
+    try {       
+        // find the note that  has to be deleted
+        let note = await Note.findById(req.params.id)
+        if(!note)
+        {
+            res.status(404).send("Not found")
+        }
+        //allow deletion if user owns this note
+        if(note.user.toString() !== req.user.id)
+        {
+            return res.status(401).send("Not Allowed");
+        }
+
+        note = await Note.findByIdAndDelete(req.params.id)
+        res.json({"Success":"Note has been deleted"})
+        // res.send("radhe radhe");  mendatory to be written
+    } catch (error) {
+      //sending the error is any problem occured
+      console.error(error.message);
+      res.status(500).send("INTERNAL SERVER OCCURED");
+    }
+})
+
 
 module.exports = router;
