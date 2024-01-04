@@ -1,8 +1,10 @@
 const connecttomongo=require('./db');
+var cors = require('cors')
 const express = require('express');
 const app = express();
 const port = 5000;
 
+app.use(cors())
 
 //to use middleware use app.use 
 app.use(express.json())
