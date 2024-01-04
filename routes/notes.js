@@ -22,7 +22,7 @@ router.get('/fetchallnotes',fetchuser, async(req,res)=>{
 
 //  this routes add notes to  our database useing post and login required  
 router.post('/addnotes',fetchuser,[
-    body("tittle", "Enter a valid tittle") // checking for a valid tittle from the req.body
+    body("title", "Enter a valid title") // checking for a valid title from the req.body
     .isLength({min: 5}) //must have min legth of 5 
     .exists(),  // must exists 
     body("description", "must contain discretion") //check for valid description of the note
@@ -41,9 +41,9 @@ router.post('/addnotes',fetchuser,[
         }
         
         //here we are creating our note from the user
-        const {tittle,description,tag} = req.body;
+        const {title,description,tag} = req.body;
         const note = new Note({
-            tittle, description, tag, user: req.user.id
+            title, description, tag, user: req.user.id
         })
         
         const savednote = await note.save()
@@ -62,10 +62,10 @@ router.post('/addnotes',fetchuser,[
 router.put('/updatenotes/:id',fetchuser,async(req,res)=>{
     try {       
         //here we are creating our note from the user inshort i am doing destructuring 
-        const {tittle,description,tag} = req.body;
+        const {title,description,tag} = req.body;
         //creating a newNote object
         const newNote = {};
-        if(tittle){newNote.tittle = tittle};
+        if(title){newNote.title = title};
         if(description){newNote.description = description};
         if(tag){newNote.tag = tag};
         // find the note that  has to be updated
