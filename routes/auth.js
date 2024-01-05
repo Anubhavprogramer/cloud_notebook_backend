@@ -12,11 +12,12 @@ const JWT_SECRET = "radhe_radhe_**()";
 router.post(
   "/createUser",
   [
-    body("name", "Enter a valid name").isLength({ min: 2 }),
+    body("name", "Enter a valid name"),
     body("email", "Enter a valid email").isEmail(),
     body("password", "Enter a valid password").isLength({ min: 5 }),
   ],
   async (req, res) => {
+    let success=true;
     //creating a  normal user
     // const user = User(req.body);
     // user.save();
@@ -26,16 +27,18 @@ router.post(
     const errors = validationResult(req);
     //if there are erors than send bad request otherwise create the error
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      success=false
+      return res.status(400).json({success:success, errors: errors.array() });
     }
     //check weather the eamil exits already
-
+    
     try {
       let user = await User.findOne({ email: req.body.email });
       if (user) {
+        success=false
         return res
-          .status(400)
-          .json({ error: "Sorry a user with this email already exits" });
+        .status(400)
+        .json({success:success, error: "Sorry a user with this email already exits" });
       }
 
       // secureing the password
@@ -51,7 +54,7 @@ router.post(
 
       //sending is user is created with out any problem
       // res.json({"nice":"User created"})
-
+      
       // creating a token and than send it as a respose to the user
       const data = {
         user: {
@@ -60,8 +63,8 @@ router.post(
       };
       const awthtoken = jwt.sign(data, JWT_SECRET);
       // console.log(jwtData)
-      res.send({ awthtoken });
-
+      res.send({success:success, awthtoken });
+      
       //  .then(user => {res.json(user),console.log(user)}) //if user gets created than add it to the database
       //  .catch(err=> {console.log(err), res.json({error:"Please enter the unique value",message:err.message})}) //if error occured than console.log the error
     } catch (error) {
@@ -81,11 +84,13 @@ router.post(
         .exists(), //it is compulsory that password should be exists
     ],
     async (req, res) => {
+      let success_for_login=true;
       //   console.log("radhe radhe");
       const errors = validationResult(req);
       //if there are erors than send bad request otherwise create the error
       if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        success_for_login=false;
+        return res.status(400).json({success: success_for_login, errors: errors.array() });
       }
 
       const { email, password } = req.body; // fetching email and password from the body
@@ -93,16 +98,18 @@ router.post(
         let user = await User.findOne({ email });
         // console.log(user);
         if (!user) {
+          success_for_login=false;
           return res
             .status(400)
-            .json({ error: "Plese try to login via correct credentials" });
+            .json({success:success_for_login, error: "Plese try to login via correct credentials" });
         }
 
         const passwordCompare = await bcrypt.compare(password, user.password);
         if (!passwordCompare) {
+          success_for_login = false;
           return res
             .status(400)
-            .json({ error: "Plese try to login via correct credentials" });
+            .json({success:success_for_login, error: "Plese try to login via correct credentials" });
         }
         // else{
         //     console.log("radhe radhe")
@@ -116,7 +123,7 @@ router.post(
         // creating the auth token for the user to make further work
         const authtoken = jwt.sign(data, JWT_SECRET);
         // console.log(authtoken);
-        res.json({ authtoken });
+        res.json({success:success_for_login, authtoken });
       } catch (error) {
         //sending the error is any problem occured
         console.error(error.message);
